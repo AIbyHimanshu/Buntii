@@ -34,13 +34,18 @@ Build a production-quality pre-launch waitlist website for Buntii — a real-tim
 - Verified end-to-end: shopper signup (UI + API), duplicate handling, trader 2-step (UI), admin login, table tabs, filters, CSV, XLSX, 401 on unauthenticated admin.
 
 ## Backlog
-- P0: Paste Supabase keys → run supabase_setup.sql → confirm switch (backend /api/health shows "store": "supabase").
-- P0: Paste PostHog project token + host, Turnstile site + secret keys (frontend/.env + backend/.env).
 - P0: Founder story section — needs founder-approved copy before it ships (currently omitted).
+- P0: User to do ONE manual waitlist signup on the preview to tick the real Turnstile checkbox (automation can't tick it by design; the loop was verified with Cloudflare's official test keys).
 - P1: Replace dummy social URLs (@buntii.app handles unconfirmed); confirm privacy@/legal@buntii.co.uk inboxes exist.
-- P1: Legal review of Privacy/Terms drafts; verify contrast audit pass; mobile device QA.
+- P1: Legal review of Privacy/Terms drafts; mobile device QA; branded sending domain for email (currently platform-shared domain).
 - P1: Connect buntii.co.uk domain; submit sitemap to Search Console.
-- P2: Brute-force lockout on admin login; rate limiting on /api/waitlist; referral leaderboard.
+- P2: PostGIS migration path (direct asyncpg/pooler connection) when live-map work starts; brute-force lockout on admin login; rate limiting on /api/waitlist; referral leaderboard.
+
+## Implemented — 2026-08-19 (evening, integrations live)
+- Supabase Postgres is now the source of truth (service-role key configured; health reports store: supabase). Verified: signup insert, duplicate 409 handling, trader details PATCH, admin reads/filters/CSV/XLSX all run against Supabase; RLS confirmed — anon key SELECT returns [] while service role reads.
+- PostHog live on EU cloud (browser + server events).
+- Turnstile live: widget renders after hostname allowlist; full widget→token→siteverify→accept loop verified with Cloudflare test keys; tokenless/forged requests rejected with 400.
+- Test rows cleaned from production Supabase project.
 
 ## Next tasks
 1. Collect Supabase/PostHog/Turnstile keys from user and wire them live.
